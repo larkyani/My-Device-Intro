@@ -14,6 +14,11 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
 }
 
 async function seedDatabase() {
+  const config = await storage.getSiteConfig();
+  if (!config) {
+    await storage.updateSiteConfig({});
+  }
+
   const profile = await storage.getProfile();
   if (!profile) {
     await storage.updateProfile({
@@ -75,6 +80,22 @@ export async function registerRoutes(
 
   app.post("/api/auth/logout", (req, res) => {
     req.session.destroy(() => res.json({ ok: true }));
+  });
+
+  // Site Config
+  app.get("/api/site-config", async (req, res) => {
+    let config = await storage.getSiteConfig();
+    if (!config) config = await storage.updateSiteConfig({});
+    res.json(config);
+  });
+
+  app.put("/api/site-config", requireAdmin, async (req, res) => {
+    try {
+      const config = await storage.updateSiteConfig(req.body);
+      res.json(config);
+    } catch (err) {
+      res.status(500).json({ message: "Internal server error" });
+    }
   });
 
   // Profile

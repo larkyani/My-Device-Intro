@@ -41,6 +41,21 @@ export type Game = typeof games.$inferSelect;
 export type InsertGame = z.infer<typeof insertGameSchema>;
 export type UpdateGameRequest = Partial<InsertGame>;
 
+// --- Site Config ---
+export const siteConfig = pgTable("site_config", {
+  id: serial("id").primaryKey(),
+  heroSubtitle: text("hero_subtitle").notNull().default("✨ Collection File Set ✨"),
+  heroTitleLine1: text("hero_title_line1").notNull().default("Welcome to"),
+  heroTitleLine2: text("hero_title_line2").notNull().default("my file🔖"),
+  catchphrase: text("catchphrase").notNull().default("My favorites, My style."),
+  description: text("description").notNull().default("私の『好き』を詰め込んだデジタルコレクションファイル。"),
+  thankYouMessage: text("thank_you_message").notNull().default("Thank you for looking ദി >⩊<︎︎ ͡ 𐦯"),
+});
+
+export const insertSiteConfigSchema = createInsertSchema(siteConfig).omit({ id: true });
+export type SiteConfig = typeof siteConfig.$inferSelect;
+export type InsertSiteConfig = z.infer<typeof insertSiteConfigSchema>;
+
 // --- SNS Links ---
 export const snsLinks = pgTable("sns_links", {
   id: serial("id").primaryKey(),

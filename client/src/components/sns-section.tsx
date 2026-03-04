@@ -2,10 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Twitter, Github, Youtube, Instagram, Twitch, Linkedin,
-  Link2, Plus, Trash2, Edit, ExternalLink, Heart, MessageCircle, Music2
+  Link2, Plus, Trash2, Edit, ExternalLink, Heart, MessageCircle, Music2, Edit2
 } from "lucide-react";
 import { useAdmin } from "@/contexts/admin-context";
 import { useSnsLinks, useCreateSnsLink, useUpdateSnsLink, useDeleteSnsLink } from "@/hooks/use-sns";
+import { useSiteConfig, useUpdateSiteConfig } from "@/hooks/use-site-config";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -137,8 +138,28 @@ const cardVariants = {
 export function SnsSection() {
   const { isAdmin } = useAdmin();
   const { data: links, isLoading } = useSnsLinks();
+  const { data: siteConf } = useSiteConfig();
+  const updateSiteConfig = useUpdateSiteConfig();
+  const { toast } = useToast();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [addHovered, setAddHovered] = useState(false);
+  const [thankEditOpen, setThankEditOpen] = useState(false);
+  const [thankEditHovered, setThankEditHovered] = useState(false);
+  const [thankDraft, setThankDraft] = useState("");
+
+  const thankYouMessage = siteConf?.thankYouMessage ?? "Thank you for looking ദി >⩊<︎︎ ͡ 𐦯";
+
+  const openThankEdit = () => {
+    setThankDraft(thankYouMessage);
+    setThankEditOpen(true);
+  };
+  const submitThankEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateSiteConfig.mutate({ thankYouMessage: thankDraft }, {
+      onSuccess: () => { setThankEditOpen(false); toast({ title: "サンクスメッセージを更新しました" }); },
+      onError: () => toast({ title: "Error", variant: "destructive" }),
+    });
+  };
 
   return (
     <section id="sns" className="relative w-full max-w-6xl mx-auto px-5 sm:px-8 py-14 pb-24 scroll-mt-16">
@@ -250,10 +271,68 @@ export function SnsSection() {
           className="h-px w-full max-w-xl mx-auto mb-8"
           style={{ background: "linear-gradient(90deg, transparent, rgba(249,168,212,0.45), rgba(147,197,253,0.45), transparent)" }}
         />
-        <p className="font-display text-sm tracking-[0.3em] uppercase text-slate-300">
-          Thank you for looking ദി &gt;⩊&lt;︎︎ ͡ 𐦯
-        </p>
+        <div className="flex items-center justify-center gap-3">
+          <p className="font-display text-sm tracking-[0.3em] uppercase text-slate-300">
+            {thankYouMessage}
+          </p>
+          {isAdmin && (
+            <button
+              onClick={openThankEdit}
+              onMouseEnter={() => setThankEditHovered(true)}
+              onMouseLeave={() => setThankEditHovered(false)}
+              className="flex items-center rounded-lg px-3 h-8 font-display tracking-wider text-xs uppercase focus:outline-none shrink-0"
+              style={{
+                background: thankEditHovered
+                  ? "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(249,168,212,0.22) 100%)"
+                  : "rgba(255,255,255,0.68)",
+                backdropFilter: "blur(24px)",
+                WebkitBackdropFilter: "blur(24px)",
+                border: `1px solid ${thankEditHovered ? "rgba(249,168,212,0.75)" : "rgba(249,168,212,0.5)"}`,
+                color: "#9d174d",
+                boxShadow: thankEditHovered
+                  ? "0 6px 20px rgba(249,168,212,0.3), inset 0 1px 0 rgba(255,255,255,0.95)"
+                  : "0 2px 12px rgba(249,168,212,0.15), inset 0 1px 0 rgba(255,255,255,0.9)",
+                transform: thankEditHovered ? "translateY(-1px)" : "translateY(0px)",
+                transition: "all 0.3s ease",
+              }}
+            >
+              <Edit2 className="w-3 h-3 mr-1" />
+              EDIT
+            </button>
+          )}
+        </div>
       </motion.div>
+
+      {/* Thank you message edit dialog */}
+      <Dialog open={thankEditOpen} onOpenChange={setThankEditOpen}>
+        <DialogContent
+          className="sm:max-w-sm rounded-2xl shadow-2xl"
+          style={{ background: "rgba(255,255,255,0.94)", backdropFilter: "blur(24px)", border: "1px solid rgba(255,255,255,0.8)" }}
+        >
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg flex items-center gap-2 text-slate-700">
+              <Heart className="w-4 h-4 fill-pink-400 text-pink-400" />
+              Edit Thanks Message
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={submitThankEdit} className="space-y-4 mt-2">
+            <Input
+              value={thankDraft}
+              onChange={(e) => setThankDraft(e.target.value)}
+              className="h-11 rounded-xl border-slate-200 focus-visible:ring-pink-400 bg-white text-slate-700"
+              autoFocus
+            />
+            <Button
+              type="submit"
+              className="w-full h-10 rounded-xl font-display tracking-wider text-sm font-bold"
+              style={{ background: "linear-gradient(135deg, #60a5fa, #c084fc, #f472b6)", color: "white" }}
+              disabled={updateSiteConfig.isPending}
+            >
+              {updateSiteConfig.isPending ? "SAVING..." : "SAVE"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

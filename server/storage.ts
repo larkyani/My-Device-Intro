@@ -1,14 +1,18 @@
 import { db } from "./db";
 import {
-  profiles, devices, games, snsLinks,
+  profiles, devices, games, snsLinks, siteConfig,
   type Profile, type InsertProfile, type UpdateProfileRequest,
   type Device, type InsertDevice, type UpdateDeviceRequest,
   type Game, type InsertGame, type UpdateGameRequest,
-  type SnsLink, type InsertSnsLink, type UpdateSnsLinkRequest
+  type SnsLink, type InsertSnsLink, type UpdateSnsLinkRequest,
+  type SiteConfig, type InsertSiteConfig,
 } from "@shared/schema";
 import { eq, asc } from "drizzle-orm";
 
 export interface IStorage {
+  getSiteConfig(): Promise<SiteConfig | undefined>;
+  updateSiteConfig(updates: Partial<InsertSiteConfig>): Promise<SiteConfig>;
+
   getProfile(): Promise<Profile | undefined>;
   updateProfile(updates: UpdateProfileRequest): Promise<Profile>;
 
@@ -32,6 +36,32 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  async getSiteConfig(): Promise<SiteConfig | undefined> {
+    const [config] = await db.select().from(siteConfig).limit(1);
+    return config;
+  }
+
+  async updateSiteConfig(updates: Partial<InsertSiteConfig>): Promise<SiteConfig> {
+    const existing = await this.getSiteConfig();
+    if (existing) {
+      const [updated] = await db.update(siteConfig)
+        .set(updates)
+        .where(eq(siteConfig.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(siteConfig).values({
+        heroSubtitle: updates.heroSubtitle ?? "✨ Collection File Set ✨",
+        heroTitleLine1: updates.heroTitleLine1 ?? "Welcome to",
+        heroTitleLine2: updates.heroTitleLine2 ?? "my file🔖",
+        catchphrase: updates.catchphrase ?? "My favorites, My style.",
+        description: updates.description ?? "私の『好き』を詰め込んだデジタルコレクションファイル。",
+        thankYouMessage: updates.thankYouMessage ?? "Thank you for looking ദി >⩊<︎︎ ͡ 𐦯",
+      }).returning();
+      return created;
+    }
+  }
+
   async getProfile(): Promise<Profile | undefined> {
     const [profile] = await db.select().from(profiles).limit(1);
     return profile;

@@ -18,7 +18,6 @@ export function Header() {
   const [activeSection, setActiveSection] = useState<string>("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const isProgrammaticScroll = useRef(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -67,21 +66,21 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    observerRef.current?.disconnect();
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (isProgrammaticScroll.current) return;
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveSection(entry.target.id);
-        });
-      },
-      { rootMargin: "-20% 0px -40% 0px", threshold: 0 }
-    );
-    NAV_ITEMS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observerRef.current?.observe(el);
-    });
-    return () => observerRef.current?.disconnect();
+    const detectSection = () => {
+      if (isProgrammaticScroll.current) return;
+      const trigger = window.innerHeight * 0.35;
+      let active = "";
+      for (const { id } of NAV_ITEMS) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= trigger) active = id;
+      }
+      setActiveSection(active);
+    };
+
+    detectSection();
+    window.addEventListener("scroll", detectSection, { passive: true });
+    return () => window.removeEventListener("scroll", detectSection);
   }, []);
 
   const scrollToSection = (id: string) => {
