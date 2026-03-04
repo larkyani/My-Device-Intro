@@ -1,11 +1,12 @@
 import { db } from "./db";
 import {
-  profiles, devices, games,
+  profiles, devices, games, snsLinks,
   type Profile, type InsertProfile, type UpdateProfileRequest,
   type Device, type InsertDevice, type UpdateDeviceRequest,
-  type Game, type InsertGame, type UpdateGameRequest
+  type Game, type InsertGame, type UpdateGameRequest,
+  type SnsLink, type InsertSnsLink, type UpdateSnsLinkRequest
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export interface IStorage {
   getProfile(): Promise<Profile | undefined>;
@@ -22,6 +23,12 @@ export interface IStorage {
   createGame(game: InsertGame): Promise<Game>;
   updateGame(id: number, updates: UpdateGameRequest): Promise<Game>;
   deleteGame(id: number): Promise<void>;
+
+  getSnsLinks(): Promise<SnsLink[]>;
+  getSnsLink(id: number): Promise<SnsLink | undefined>;
+  createSnsLink(link: InsertSnsLink): Promise<SnsLink>;
+  updateSnsLink(id: number, updates: UpdateSnsLinkRequest): Promise<SnsLink>;
+  deleteSnsLink(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -96,6 +103,32 @@ export class DatabaseStorage implements IStorage {
 
   async deleteGame(id: number): Promise<void> {
     await db.delete(games).where(eq(games.id, id));
+  }
+
+  async getSnsLinks(): Promise<SnsLink[]> {
+    return await db.select().from(snsLinks).orderBy(asc(snsLinks.displayOrder));
+  }
+
+  async getSnsLink(id: number): Promise<SnsLink | undefined> {
+    const [link] = await db.select().from(snsLinks).where(eq(snsLinks.id, id));
+    return link;
+  }
+
+  async createSnsLink(link: InsertSnsLink): Promise<SnsLink> {
+    const [created] = await db.insert(snsLinks).values(link).returning();
+    return created;
+  }
+
+  async updateSnsLink(id: number, updates: UpdateSnsLinkRequest): Promise<SnsLink> {
+    const [updated] = await db.update(snsLinks)
+      .set(updates)
+      .where(eq(snsLinks.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteSnsLink(id: number): Promise<void> {
+    await db.delete(snsLinks).where(eq(snsLinks.id, id));
   }
 }
 

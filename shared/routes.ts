@@ -1,11 +1,13 @@
 import { z } from "zod";
-import { 
-  insertProfileSchema, 
-  insertDeviceSchema, 
+import {
+  insertProfileSchema,
+  insertDeviceSchema,
   insertGameSchema,
+  insertSnsLinkSchema,
   profiles,
   devices,
-  games
+  games,
+  snsLinks
 } from "./schema";
 
 export const errorSchemas = {
@@ -112,7 +114,43 @@ export const api = {
         404: errorSchemas.notFound,
       },
     },
-  }
+  },
+  sns: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/sns' as const,
+      responses: {
+        200: z.array(z.custom<typeof snsLinks.$inferSelect>()),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/sns' as const,
+      input: insertSnsLinkSchema,
+      responses: {
+        201: z.custom<typeof snsLinks.$inferSelect>(),
+        400: errorSchemas.validation,
+      },
+    },
+    update: {
+      method: 'PUT' as const,
+      path: '/api/sns/:id' as const,
+      input: insertSnsLinkSchema.partial(),
+      responses: {
+        200: z.custom<typeof snsLinks.$inferSelect>(),
+        400: errorSchemas.validation,
+        404: errorSchemas.notFound,
+      },
+    },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/sns/:id' as const,
+      responses: {
+        204: z.void(),
+        404: errorSchemas.notFound,
+      },
+    },
+  },
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
@@ -132,3 +170,5 @@ export type DevicesListResponse = z.infer<typeof api.devices.list.responses[200]
 export type DeviceResponse = z.infer<typeof api.devices.create.responses[201]>;
 export type GamesListResponse = z.infer<typeof api.games.list.responses[200]>;
 export type GameResponse = z.infer<typeof api.games.create.responses[201]>;
+export type SnsListResponse = z.infer<typeof api.sns.list.responses[200]>;
+export type SnsResponse = z.infer<typeof api.sns.create.responses[201]>;

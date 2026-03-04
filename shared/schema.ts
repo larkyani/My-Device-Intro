@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -7,6 +7,7 @@ export const profiles = pgTable("profiles", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   bio: text("bio").notNull(),
+  avatarUrl: text("avatar_url"),
 });
 
 export const insertProfileSchema = createInsertSchema(profiles).omit({ id: true });
@@ -39,3 +40,16 @@ export const insertGameSchema = createInsertSchema(games).omit({ id: true });
 export type Game = typeof games.$inferSelect;
 export type InsertGame = z.infer<typeof insertGameSchema>;
 export type UpdateGameRequest = Partial<InsertGame>;
+
+// --- SNS Links ---
+export const snsLinks = pgTable("sns_links", {
+  id: serial("id").primaryKey(),
+  platform: text("platform").notNull(),
+  url: text("url").notNull(),
+  displayOrder: integer("display_order").notNull().default(0),
+});
+
+export const insertSnsLinkSchema = createInsertSchema(snsLinks).omit({ id: true });
+export type SnsLink = typeof snsLinks.$inferSelect;
+export type InsertSnsLink = z.infer<typeof insertSnsLinkSchema>;
+export type UpdateSnsLinkRequest = Partial<InsertSnsLink>;

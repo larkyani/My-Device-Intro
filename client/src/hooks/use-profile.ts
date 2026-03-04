@@ -43,8 +43,8 @@ export function useUpdateProfile() {
       const data = await res.json();
       return parseWithLogging<ProfileResponse>(api.profile.update.responses[200], data, "profile.update");
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [api.profile.get.path] });
+    onSuccess: (data) => {
+      queryClient.setQueryData([api.profile.get.path], data);
     },
   });
 }

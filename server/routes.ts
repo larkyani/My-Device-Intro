@@ -27,6 +27,14 @@ async function seedDatabase() {
     await storage.createGame({ title: "Cyberpunk 2077", platform: "PC/PS5", description: "世界観とストーリーが最高。ナイトシティの探索が止まらない。" });
     await storage.createGame({ title: "ELDEN RING", platform: "PC", description: "ビルドを考えるのが楽しいアクションRPG。DLCもクリア済み。" });
   }
+
+  const existingSns = await storage.getSnsLinks();
+  if (existingSns.length === 0) {
+    await storage.createSnsLink({ platform: "Twitter", url: "https://twitter.com/", displayOrder: 0 });
+    await storage.createSnsLink({ platform: "GitHub", url: "https://github.com/", displayOrder: 1 });
+    await storage.createSnsLink({ platform: "Discord", url: "https://discord.com/", displayOrder: 2 });
+    await storage.createSnsLink({ platform: "YouTube", url: "https://youtube.com/", displayOrder: 3 });
+  }
 }
 
 export async function registerRoutes(
@@ -153,6 +161,53 @@ export async function registerRoutes(
       return res.status(404).json({ message: "Game not found" });
     }
     await storage.deleteGame(id);
+    res.status(204).send();
+  });
+
+  // SNS Links
+  app.get(api.sns.list.path, async (req, res) => {
+    const links = await storage.getSnsLinks();
+    res.json(links);
+  });
+
+  app.post(api.sns.create.path, async (req, res) => {
+    try {
+      const input = api.sns.create.input.parse(req.body);
+      const link = await storage.createSnsLink(input);
+      res.status(201).json(link);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join('.') });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.put(api.sns.update.path, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const input = api.sns.update.input.parse(req.body);
+      const existing = await storage.getSnsLink(id);
+      if (!existing) {
+        return res.status(404).json({ message: "SNS link not found" });
+      }
+      const link = await storage.updateSnsLink(id, input);
+      res.json(link);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join('.') });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.delete(api.sns.delete.path, async (req, res) => {
+    const id = Number(req.params.id);
+    const existing = await storage.getSnsLink(id);
+    if (!existing) {
+      return res.status(404).json({ message: "SNS link not found" });
+    }
+    await storage.deleteSnsLink(id);
     res.status(204).send();
   });
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oxanium:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Oxanium:wght@500;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,52 +6,65 @@
 
 @layer base {
   :root {
-    /* Enforce Dark Mode for the Gamer Aesthetic */
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
+    /* ✦ Lillie Collection File Set — Light & Dreamy ✦ */
+    --background: 210 60% 98%;
+    --foreground: 215 65% 18%;
 
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 65% 18%;
 
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 65% 18%;
 
-    /* Neon Cyan */
-    --primary: 180 100% 50%;
-    --primary-foreground: 240 10% 4%;
+    /* Sky blue */
+    --primary: 207 90% 54%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Deep Blue/Purple for secondary elements */
-    --secondary: 240 30% 15%;
-    --secondary-foreground: 0 0% 98%;
+    /* Soft pink blush */
+    --secondary: 350 60% 94%;
+    --secondary-foreground: 215 65% 18%;
 
-    --muted: 240 20% 12%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 210 40% 93%;
+    --muted-foreground: 215 25% 48%;
 
-    /* Neon Purple/Pink */
-    --accent: 280 100% 60%;
-    --accent-foreground: 0 0% 98%;
+    /* Cherry blossom pink */
+    --accent: 344 80% 68%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 20% 15%;
-    --input: 240 20% 15%;
-    --ring: 180 100% 50%;
+    --border: 210 40% 82%;
+    --input: 0 0% 100%;
+    --ring: 207 90% 54%;
 
-    --radius: 0.5rem;
-    
-    --font-sans: 'Inter', sans-serif;
-    --font-display: 'Oxanium', cursive;
+    --radius: 0.75rem;
+    --font-sans: 'M PLUS Rounded 1c', 'Inter', sans-serif;
+    --font-display: 'M PLUS Rounded 1c', 'Oxanium', sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  button:focus,
+  button:focus-visible,
+  a:focus,
+  a:focus-visible {
+    outline: none !important;
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary;
+    @apply antialiased;
     font-family: var(--font-sans);
-    /* Subtle dot grid pattern for a techy feel */
-    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-position: center;
+    color: hsl(var(--foreground));
+    /* Base gradient: sky → sakura → white-blue */
+    background:
+      radial-gradient(rgba(174, 198, 255, 0.12) 1px, transparent 1px),
+      linear-gradient(145deg, #E0F2FE 0%, #F5E8FF 30%, #FFF1F2 60%, #F0F9FF 100%);
+    background-size: 28px 28px, 100% 100%;
     background-attachment: fixed;
+    selection-color: #2563eb;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -61,24 +74,209 @@
 }
 
 @layer utilities {
+  /* --- Glow Text (soft, works on light bg) --- */
   .glow-text {
-    text-shadow: 0 0 10px hsla(var(--primary) / 0.5), 0 0 20px hsla(var(--primary) / 0.3);
-  }
-  
-  .glow-text-accent {
-    text-shadow: 0 0 10px hsla(var(--accent) / 0.5), 0 0 20px hsla(var(--accent) / 0.3);
+    text-shadow:
+      0 0 10px rgba(96, 165, 250, 0.45),
+      0 0 30px rgba(96, 165, 250, 0.25);
   }
 
-  .glow-border {
-    box-shadow: inset 0 0 0 1px hsla(var(--primary) / 0.2), 0 0 15px hsla(var(--primary) / 0.1);
-    transition: all 0.3s ease;
+  .glow-text-pink {
+    text-shadow:
+      0 0 10px rgba(249, 168, 212, 0.5),
+      0 0 28px rgba(244, 114, 182, 0.3);
   }
 
-  .glow-border:hover {
-    box-shadow: inset 0 0 0 1px hsla(var(--primary) / 0.5), 0 0 25px hsla(var(--primary) / 0.2);
+  .glow-text-hero {
+    text-shadow:
+      0 0 20px rgba(96, 165, 250, 0.4),
+      0 0 60px rgba(96, 165, 250, 0.2),
+      0 0 100px rgba(244, 114, 182, 0.15);
   }
 
+  /* --- Glass Panels --- */
   .glass-panel {
-    @apply bg-background/60 backdrop-blur-md border border-white/5;
+    background: rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow:
+      0 4px 24px rgba(147, 197, 253, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
   }
+
+  .glass-panel-strong {
+    background: rgba(255, 255, 255, 0.42);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+      0 8px 40px rgba(147, 197, 253, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.30);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.60);
+    box-shadow:
+      0 2px 16px rgba(147, 197, 253, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: all 0.35s ease;
+  }
+
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.50);
+    box-shadow:
+      0 8px 32px rgba(147, 197, 253, 0.22),
+      0 2px 8px rgba(244, 114, 182, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* --- Shimmer Text (blue → violet → pink) --- */
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .shimmer-text {
+    background: linear-gradient(
+      90deg,
+      #60a5fa 0%,
+      #818cf8 25%,
+      #c084fc 45%,
+      #f472b6 65%,
+      #60a5fa 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 5s linear infinite;
+  }
+
+  /* --- Wave gradient text (gentle hue shift) --- */
+  @keyframes wave-gradient {
+    0%   { background-position: 0% center; }
+    50%  { background-position: 100% center; }
+    100% { background-position: 0% center; }
+  }
+
+  .wave-text {
+    background: linear-gradient(
+      90deg,
+      #f472b6 0%,
+      #c084fc 20%,
+      #818cf8 40%,
+      #38bdf8 60%,
+      #c084fc 80%,
+      #f472b6 100%
+    );
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: wave-gradient 9s ease-in-out infinite;
+    filter: drop-shadow(0 4px 24px rgba(244,114,182,0.22)) drop-shadow(0 2px 10px rgba(56,189,248,0.18));
+  }
+
+  /* --- Hero title: wave + gradient-size breathing (4s seamless loop) --- */
+  @keyframes gradient-breathe {
+    0%   { background-size: 300% auto; }
+    50%  { background-size: 220% auto; }
+    100% { background-size: 300% auto; }
+  }
+
+  .hero-title-text {
+    background: linear-gradient(
+      90deg,
+      #f472b6 0%,
+      #c084fc 20%,
+      #818cf8 40%,
+      #38bdf8 60%,
+      #c084fc 80%,
+      #f472b6 100%
+    );
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: wave-gradient 14s ease-in-out infinite;
+    filter: drop-shadow(0 4px 24px rgba(244,114,182,0.22)) drop-shadow(0 2px 10px rgba(56,189,248,0.18));
+  }
+
+  /* --- Terminal label (keeps Oxanium for retro-digital feel) --- */
+  .terminal-label {
+    font-family: 'Oxanium', 'M PLUS Rounded 1c', sans-serif;
+    @apply text-xs tracking-[0.25em] uppercase font-semibold;
+    color: rgba(37, 99, 235, 0.65);
+    letter-spacing: 0.22em;
+  }
+
+  /* --- Floating orb animations --- */
+  @keyframes float-orb-a {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    25%  { transform: translate(80px, 50px) scale(1.04); }
+    50%  { transform: translate(40px, -30px) scale(0.97); }
+    75%  { transform: translate(-30px, 60px) scale(1.02); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+
+  @keyframes float-orb-b {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    30%  { transform: translate(-60px, -50px) scale(1.05); }
+    60%  { transform: translate(-20px, 40px) scale(0.96); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+
+  @keyframes float-orb-c {
+    0%   { transform: translate(0px, 0px); }
+    40%  { transform: translate(50px, -40px); }
+    80%  { transform: translate(-40px, 50px); }
+    100% { transform: translate(0px, 0px); }
+  }
+
+  /* --- Heart beat --- */
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    15%  { transform: scale(1.28); }
+    30%  { transform: scale(1); }
+    45%  { transform: scale(1.16); }
+    60%  { transform: scale(1); }
+  }
+  .animate-heartbeat { animation: heartbeat 2.4s ease-in-out infinite; }
+
+  /* --- Bounce down --- */
+  @keyframes bounce-down {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50%       { transform: translateY(8px); opacity: 0.9; }
+  }
+  .animate-bounce-down { animation: bounce-down 1.6s ease-in-out infinite; }
+
+  /* --- Glow border (light) --- */
+  .glow-border {
+    box-shadow: 0 0 0 1px rgba(147,197,253,0.25), 0 4px 16px rgba(147,197,253,0.1);
+    transition: all 0.4s ease;
+  }
+  .glow-border:hover {
+    box-shadow: 0 0 0 1px rgba(96,165,250,0.45), 0 8px 28px rgba(147,197,253,0.22);
+  }
+
+  /* --- Pulse glow (soft) --- */
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.65; }
+    50%       { opacity: 1; }
+  }
+  .animate-pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+
+  /* --- Scrollbar (pastel) --- */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: rgba(224, 242, 254, 0.3); }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(147, 197, 253, 0.5);
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(96, 165, 250, 0.7); }
 }
