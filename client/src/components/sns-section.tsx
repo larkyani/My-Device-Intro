@@ -4,6 +4,7 @@ import {
   Twitter, Github, Youtube, Instagram, Twitch, Linkedin,
   Link2, Plus, Trash2, Edit, ExternalLink, Heart, MessageCircle, Music2
 } from "lucide-react";
+import { useAdmin } from "@/contexts/admin-context";
 import { useSnsLinks, useCreateSnsLink, useUpdateSnsLink, useDeleteSnsLink } from "@/hooks/use-sns";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -134,6 +135,7 @@ const cardVariants = {
 };
 
 export function SnsSection() {
+  const { isAdmin } = useAdmin();
   const { data: links, isLoading } = useSnsLinks();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [addHovered, setAddHovered] = useState(false);
@@ -153,7 +155,7 @@ export function SnsSection() {
           className="flex-1 h-px"
           style={{ background: "linear-gradient(90deg, rgba(249,168,212,0.4), transparent)" }}
         />
-        <SnsFormModal
+        {isAdmin && <SnsFormModal
           isOpen={isAddOpen}
           setIsOpen={setIsAddOpen}
           trigger={
@@ -182,7 +184,7 @@ export function SnsSection() {
               </span>
             </button>
           }
-        />
+        />}
       </motion.div>
 
       {isLoading ? (
@@ -289,6 +291,7 @@ function HeartBurst({ show }: { show: boolean }) {
 }
 
 function SnsCard({ link }: { link: SnsLink }) {
+  const { isAdmin } = useAdmin();
   const deleteSnsLink = useDeleteSnsLink();
   const { toast } = useToast();
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -416,8 +419,8 @@ function SnsCard({ link }: { link: SnsLink }) {
         )}
       </AnimatePresence>
 
-      {/* Edit/Delete/Open buttons */}
-      <div
+      {/* Edit/Delete/Open buttons — admin only */}
+      {isAdmin && <div
         className="absolute top-2.5 right-2.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20"
         onClick={(e) => e.stopPropagation()}
       >
@@ -452,7 +455,7 @@ function SnsCard({ link }: { link: SnsLink }) {
         >
           <Trash2 className="w-3 h-3" />
         </button>
-      </div>
+      </div>}
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center p-6 min-h-[148px] gap-4">

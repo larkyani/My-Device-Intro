@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Gamepad2, Monitor, LayoutGrid, Plus, Trash2, Edit, Joystick, Sparkles
 } from "lucide-react";
+import { useAdmin } from "@/contexts/admin-context";
 import { useGames, useCreateGame, useUpdateGame, useDeleteGame } from "@/hooks/use-games";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -99,6 +100,7 @@ const cardVariants = {
 };
 
 export function GamesSection() {
+  const { isAdmin } = useAdmin();
   const { data: games, isLoading } = useGames();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [addHovered, setAddHovered] = useState(false);
@@ -118,7 +120,7 @@ export function GamesSection() {
           className="flex-1 h-px"
           style={{ background: "linear-gradient(90deg, rgba(249,168,212,0.4), transparent)" }}
         />
-        <GameFormModal
+        {isAdmin && <GameFormModal
           isOpen={isAddOpen}
           setIsOpen={setIsAddOpen}
           trigger={
@@ -147,7 +149,7 @@ export function GamesSection() {
               </span>
             </button>
           }
-        />
+        />}
       </motion.div>
 
       {isLoading ? (
@@ -187,6 +189,7 @@ export function GamesSection() {
 }
 
 function GameCard({ game }: { game: Game }) {
+  const { isAdmin } = useAdmin();
   const deleteGame = useDeleteGame();
   const { toast } = useToast();
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -260,7 +263,7 @@ function GameCard({ game }: { game: Game }) {
           <h3 className="text-lg font-display font-bold text-slate-700 leading-tight">
             {game.title}
           </h3>
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0">
+          {isAdmin && <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0">
             <GameFormModal
               isOpen={isEditOpen}
               setIsOpen={setIsEditOpen}
@@ -281,7 +284,7 @@ function GameCard({ game }: { game: Game }) {
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
-          </div>
+          </div>}
         </div>
 
         <div className="mb-2.5">

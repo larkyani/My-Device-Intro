@@ -4,6 +4,7 @@ import {
   Monitor, Cpu, Keyboard, Mouse, Smartphone, Headphones,
   Plus, Trash2, Edit, Server, Wifi, Layers
 } from "lucide-react";
+import { useAdmin } from "@/contexts/admin-context";
 import { useDevices, useCreateDevice, useUpdateDevice, useDeleteDevice } from "@/hooks/use-devices";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -88,6 +89,7 @@ const cardVariants = {
 };
 
 export function SetupSection() {
+  const { isAdmin } = useAdmin();
   const { data: devices, isLoading } = useDevices();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [addHovered, setAddHovered] = useState(false);
@@ -108,7 +110,7 @@ export function SetupSection() {
           className="flex-1 h-px"
           style={{ background: "linear-gradient(90deg, rgba(147,197,253,0.4), transparent)" }}
         />
-        <DeviceFormModal
+        {isAdmin && <DeviceFormModal
           isOpen={isAddOpen}
           setIsOpen={setIsAddOpen}
           trigger={
@@ -137,7 +139,7 @@ export function SetupSection() {
               </span>
             </button>
           }
-        />
+        />}
       </motion.div>
 
       {isLoading ? (
@@ -177,6 +179,7 @@ export function SetupSection() {
 }
 
 function DeviceCard({ device }: { device: Device }) {
+  const { isAdmin } = useAdmin();
   const deleteDevice = useDeleteDevice();
   const { toast } = useToast();
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -222,8 +225,8 @@ function DeviceCard({ device }: { device: Device }) {
         }}
       />
 
-      {/* Edit/Delete */}
-      <div className="absolute top-4 right-4 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+      {/* Edit/Delete — admin only */}
+      {isAdmin && <div className="absolute top-4 right-4 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
         <DeviceFormModal
           isOpen={isEditOpen}
           setIsOpen={setIsEditOpen}
@@ -244,7 +247,7 @@ function DeviceCard({ device }: { device: Device }) {
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
-      </div>
+      </div>}
 
       {/* Icon */}
       <div

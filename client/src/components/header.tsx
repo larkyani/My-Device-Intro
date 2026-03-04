@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
+import { useAdmin } from "@/contexts/admin-context";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const NAV_ITEMS = [
   { label: "About", id: "about" },
@@ -16,6 +21,44 @@ export function Header() {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const isProgrammaticScroll = useRef(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // Admin login dialog (triggered by clicking logo 5 times)
+  const { isAdmin, login, logout } = useAdmin();
+  const { toast } = useToast();
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
+  const logoClickCount = useRef(0);
+  const logoClickTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleLogoClick = () => {
+    scrollToTop();
+    logoClickCount.current += 1;
+    clearTimeout(logoClickTimer.current);
+    if (logoClickCount.current >= 5) {
+      logoClickCount.current = 0;
+      if (isAdmin) {
+        logout().then(() => toast({ title: "ログアウトしました" }));
+      } else {
+        setLoginOpen(true);
+      }
+    } else {
+      logoClickTimer.current = setTimeout(() => { logoClickCount.current = 0; }, 1500);
+    }
+  };
+
+  const handleLogin = async () => {
+    setLoggingIn(true);
+    const result = await login(password);
+    setLoggingIn(false);
+    if (result === true) {
+      setLoginOpen(false);
+      setPassword("");
+      toast({ title: "ログインしました" });
+    } else {
+      toast({ title: result, variant: "destructive" });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 40);
@@ -82,10 +125,10 @@ export function Header() {
         }
       >
         <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo — 5回クリックで管理者ログイン/ログアウト */}
           <button
-            onClick={scrollToTop}
-            className="flex items-center group focus:outline-none focus-visible:outline-none"
+            onClick={handleLogoClick}
+            className="flex items-center gap-2 group focus:outline-none focus-visible:outline-none"
           >
             <span className="font-display font-bold text-base sm:text-lg text-slate-700 tracking-widest transition-all duration-300 group-hover:text-sky-600">
               My file
@@ -96,6 +139,12 @@ export function Header() {
             >
               .
             </span>
+            {isAdmin && (
+              <span className="text-[9px] font-bold tracking-widest uppercase text-sky-500 opacity-70 flex items-center gap-0.5">
+                <LogOut className="w-2.5 h-2.5" />
+                admin
+              </span>
+            )}
           </button>
 
           {/* Desktop Nav */}
@@ -182,6 +231,40 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Admin login dialog */}
+      <Dialog open={loginOpen} onOpenChange={(o) => { setLoginOpen(o); setPassword(""); }}>
+        <DialogContent
+          className="sm:max-w-xs rounded-2xl"
+          style={{ background: "rgba(255,255,255,0.94)", backdropFilter: "blur(24px)", border: "1px solid rgba(255,255,255,0.8)" }}
+        >
+          <DialogHeader>
+            <DialogTitle className="font-display text-slate-700 text-base tracking-wider">
+              管理者ログイン
+            </DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleLogin(); }}
+            className="space-y-4 mt-2"
+          >
+            <Input
+              type="password"
+              placeholder="パスワード"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="h-11 rounded-xl border-slate-200 focus-visible:ring-sky-400 bg-white text-slate-700"
+              autoFocus
+            />
+            <Button
+              type="submit"
+              className="w-full h-10 rounded-xl font-display tracking-wider text-sm font-bold"
+              style={{ background: "linear-gradient(135deg, #60a5fa, #c084fc)", color: "white" }}
+              disabled={loggingIn || !password}
+            >
+              {loggingIn ? "..." : "ログイン"}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Feather, Edit2, UserCircle2, Sparkles, Camera } from "lucide-react";
+import { useAdmin } from "@/contexts/admin-context";
 import { useProfile, useUpdateProfile } from "@/hooks/use-profile";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -46,6 +47,7 @@ const itemVariants = {
 };
 
 export function AboutSection() {
+  const { isAdmin } = useAdmin();
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
   const [isOpen, setIsOpen] = useState(false);
@@ -186,8 +188,8 @@ export function AboutSection() {
               </motion.div>
             </div>
 
-            {/* Edit button */}
-            <motion.div variants={itemVariants} className="shrink-0">
+            {/* Edit button — admin only */}
+            {isAdmin && <motion.div variants={itemVariants} className="shrink-0">
               <Dialog open={isOpen} onOpenChange={handleDialogOpen}>
                 <DialogTrigger asChild>
                   <button
@@ -318,7 +320,7 @@ export function AboutSection() {
                   </Form>
                 </DialogContent>
               </Dialog>
-            </motion.div>
+            </motion.div>}
           </div>
         </motion.div>
       )}

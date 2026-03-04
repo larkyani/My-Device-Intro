@@ -1,8 +1,17 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+
+declare module "express-session" {
+  interface SessionData { isAdmin: boolean; }
+}
+
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.isAdmin) return res.status(401).json({ message: "Unauthorized" });
+  next();
+}
 
 async function seedDatabase() {
   const profile = await storage.getProfile();
@@ -45,6 +54,29 @@ export async function registerRoutes(
   // Seed DB on startup
   seedDatabase().catch(console.error);
 
+  // Auth
+  app.get("/api/auth/me", (req, res) => {
+    res.json({ isAdmin: !!req.session.isAdmin });
+  });
+
+  app.post("/api/auth/login", (req, res) => {
+    const { password } = req.body;
+    const adminPassword = process.env.ADMIN_PASSWORD || "shino0314";
+    if (password === adminPassword) {
+      req.session.isAdmin = true;
+      req.session.save((err) => {
+        if (err) return res.status(500).json({ message: "Session error" });
+        res.json({ ok: true });
+      });
+    } else {
+      res.status(401).json({ message: "パスワードが違います" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy(() => res.json({ ok: true }));
+  });
+
   // Profile
   app.get(api.profile.get.path, async (req, res) => {
     let profile = await storage.getProfile();
@@ -57,7 +89,7 @@ export async function registerRoutes(
     res.json(profile);
   });
 
-  app.put(api.profile.update.path, async (req, res) => {
+  app.put(api.profile.update.path, requireAdmin, async (req, res) => {
     try {
       const input = api.profile.update.input.parse(req.body);
       const profile = await storage.updateProfile(input);
@@ -76,7 +108,7 @@ export async function registerRoutes(
     res.json(devices);
   });
 
-  app.post(api.devices.create.path, async (req, res) => {
+  app.post(api.devices.create.path, requireAdmin, async (req, res) => {
     try {
       const input = api.devices.create.input.parse(req.body);
       const device = await storage.createDevice(input);
@@ -89,7 +121,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put(api.devices.update.path, async (req, res) => {
+  app.put(api.devices.update.path, requireAdmin, async (req, res) => {
     try {
       const id = Number(req.params.id);
       const input = api.devices.update.input.parse(req.body);
@@ -107,7 +139,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete(api.devices.delete.path, async (req, res) => {
+  app.delete(api.devices.delete.path, requireAdmin, async (req, res) => {
     const id = Number(req.params.id);
     const existing = await storage.getDevice(id);
     if (!existing) {
@@ -123,7 +155,7 @@ export async function registerRoutes(
     res.json(games);
   });
 
-  app.post(api.games.create.path, async (req, res) => {
+  app.post(api.games.create.path, requireAdmin, async (req, res) => {
     try {
       const input = api.games.create.input.parse(req.body);
       const game = await storage.createGame(input);
@@ -136,7 +168,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put(api.games.update.path, async (req, res) => {
+  app.put(api.games.update.path, requireAdmin, async (req, res) => {
     try {
       const id = Number(req.params.id);
       const input = api.games.update.input.parse(req.body);
@@ -154,7 +186,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete(api.games.delete.path, async (req, res) => {
+  app.delete(api.games.delete.path, requireAdmin, async (req, res) => {
     const id = Number(req.params.id);
     const existing = await storage.getGame(id);
     if (!existing) {
@@ -170,7 +202,7 @@ export async function registerRoutes(
     res.json(links);
   });
 
-  app.post(api.sns.create.path, async (req, res) => {
+  app.post(api.sns.create.path, requireAdmin, async (req, res) => {
     try {
       const input = api.sns.create.input.parse(req.body);
       const link = await storage.createSnsLink(input);
@@ -183,7 +215,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put(api.sns.update.path, async (req, res) => {
+  app.put(api.sns.update.path, requireAdmin, async (req, res) => {
     try {
       const id = Number(req.params.id);
       const input = api.sns.update.input.parse(req.body);
@@ -201,7 +233,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete(api.sns.delete.path, async (req, res) => {
+  app.delete(api.sns.delete.path, requireAdmin, async (req, res) => {
     const id = Number(req.params.id);
     const existing = await storage.getSnsLink(id);
     if (!existing) {
