@@ -17,7 +17,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) return { isAdmin: false };
+        return r.json();
+      })
       .then((d) => setIsAdmin(!!d.isAdmin))
       .catch(() => {});
   }, []);
@@ -42,7 +45,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
     setIsAdmin(false);
   };
 

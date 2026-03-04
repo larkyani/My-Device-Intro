@@ -2,13 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl, type SnsListResponse, type SnsResponse } from "@shared/routes";
 import { type InsertSnsLink, type UpdateSnsLinkRequest } from "@shared/schema";
 
+const fallbackSns: SnsListResponse = [];
+
 export function useSnsLinks() {
   return useQuery({
     queryKey: [api.sns.list.path],
     queryFn: async () => {
-      const res = await fetch(api.sns.list.path);
-      if (!res.ok) throw new Error("Failed to fetch SNS links");
-      return res.json() as Promise<SnsListResponse>;
+      try {
+        const res = await fetch(api.sns.list.path);
+        if (!res.ok) return fallbackSns;
+        return res.json() as Promise<SnsListResponse>;
+      } catch {
+        return fallbackSns;
+      }
     },
   });
 }

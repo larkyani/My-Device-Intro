@@ -2,23 +2,25 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl, type DevicesListResponse, type DeviceResponse } from "@shared/routes";
 import { type InsertDevice, type UpdateDeviceRequest } from "@shared/schema";
 
-function parseWithLogging<T>(schema: any, data: unknown, label: string): T {
-  const result = schema.safeParse(data);
-  if (!result.success) {
-    console.error(`[Zod] ${label} validation failed:`, result.error.format());
-    throw result.error;
-  }
-  return result.data;
-}
+const fallbackDevices: DevicesListResponse = [
+  { id: 1, name: "Custom PC (白統一)", category: "Desktop", specs: "Core i7 13700K / RTX 4080 / 32GB RAM" },
+  { id: 2, name: "Logicool G PRO X SUPERLIGHT", category: "Mouse", specs: "ワイヤレス / 63g 軽量" },
+  { id: 3, name: "Wooting 60HE", category: "Keyboard", specs: "ラピッドトリガー搭載 / 60%サイズ" },
+  { id: 4, name: "BenQ ZOWIE XL2546K", category: "Monitor", specs: "24.5インチ / 240Hz / TNパネル" },
+];
 
 export function useDevices() {
   return useQuery({
     queryKey: [api.devices.list.path],
     queryFn: async () => {
-      const res = await fetch(api.devices.list.path);
-      if (!res.ok) throw new Error("Failed to fetch devices");
-      const data = await res.json();
-      return parseWithLogging<DevicesListResponse>(api.devices.list.responses[200], data, "devices.list");
+      try {
+        const res = await fetch(api.devices.list.path);
+        if (!res.ok) return fallbackDevices;
+        const data = await res.json();
+        return data as DevicesListResponse;
+      } catch {
+        return fallbackDevices;
+      }
     },
   });
 }
@@ -36,7 +38,7 @@ export function useCreateDevice() {
       
       if (!res.ok) throw new Error("Failed to create device");
       const data = await res.json();
-      return parseWithLogging<DeviceResponse>(api.devices.create.responses[201], data, "devices.create");
+      return data as DeviceResponse;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.devices.list.path] });
@@ -58,7 +60,7 @@ export function useUpdateDevice() {
       
       if (!res.ok) throw new Error("Failed to update device");
       const data = await res.json();
-      return parseWithLogging<DeviceResponse>(api.devices.update.responses[200], data, "devices.update");
+      return data as DeviceResponse;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.devices.list.path] });

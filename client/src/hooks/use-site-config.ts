@@ -1,10 +1,25 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SiteConfig, InsertSiteConfig } from "@shared/schema";
 
+const fallbackConfig: SiteConfig = {
+  id: 1,
+  heroTitle: "Welcome",
+  heroSubtitle: "",
+  aboutText: "",
+};
+
 export function useSiteConfig() {
   return useQuery<SiteConfig>({
     queryKey: ["/api/site-config"],
-    queryFn: () => fetch("/api/site-config").then((r) => r.json()),
+    queryFn: async () => {
+      try {
+        const res = await fetch("/api/site-config");
+        if (!res.ok) return fallbackConfig;
+        return await res.json();
+      } catch {
+        return fallbackConfig;
+      }
+    },
   });
 }
 
