@@ -33,56 +33,56 @@ const PLATFORM_CONFIG: Record<string, PlatformCfg> = {
     iconColor: "#3b82f6",
     iconBg: "rgba(147,197,253,0.2)",
     badgeStyle: "bg-sky-100 text-sky-700 border border-sky-200",
-    hoverGlow: "rgba(147,197,253,0.35)",
-    themeWash: "radial-gradient(ellipse at 35% 30%, rgba(96,165,250,0.55) 0%, rgba(147,197,253,0.25) 45%, transparent 70%)",
+    hoverGlow: "rgba(147,197,253,0.28)",
+    themeWash: "radial-gradient(ellipse 90% 80% at 50% 50%, rgba(96,165,250,0.20) 0%, rgba(147,197,253,0.10) 60%, transparent 100%)",
   },
   PlayStation: {
     icon: Gamepad2,
     iconColor: "#2563eb",
     iconBg: "rgba(147,197,253,0.18)",
     badgeStyle: "bg-blue-100 text-blue-700 border border-blue-200",
-    hoverGlow: "rgba(147,197,253,0.3)",
-    themeWash: "radial-gradient(ellipse at 35% 30%, rgba(37,99,235,0.50) 0%, rgba(96,130,255,0.25) 45%, transparent 70%)",
+    hoverGlow: "rgba(147,197,253,0.24)",
+    themeWash: "radial-gradient(ellipse 90% 80% at 50% 50%, rgba(37,99,235,0.18) 0%, rgba(96,130,255,0.09) 60%, transparent 100%)",
   },
   Xbox: {
     icon: Gamepad2,
     iconColor: "#16a34a",
     iconBg: "rgba(110,231,183,0.2)",
     badgeStyle: "bg-green-100 text-green-700 border border-green-200",
-    hoverGlow: "rgba(110,231,183,0.3)",
-    themeWash: "radial-gradient(ellipse at 35% 30%, rgba(34,197,94,0.55) 0%, rgba(110,231,183,0.28) 45%, transparent 70%)",
+    hoverGlow: "rgba(110,231,183,0.24)",
+    themeWash: "radial-gradient(ellipse 90% 80% at 50% 50%, rgba(34,197,94,0.18) 0%, rgba(110,231,183,0.09) 60%, transparent 100%)",
   },
   Nintendo: {
     icon: LayoutGrid,
     iconColor: "#dc2626",
     iconBg: "rgba(252,165,165,0.2)",
     badgeStyle: "bg-red-100 text-red-700 border border-red-200",
-    hoverGlow: "rgba(252,165,165,0.3)",
-    themeWash: "radial-gradient(ellipse at 35% 30%, rgba(239,68,68,0.55) 0%, rgba(252,165,165,0.28) 45%, transparent 70%)",
+    hoverGlow: "rgba(252,165,165,0.24)",
+    themeWash: "radial-gradient(ellipse 90% 80% at 50% 50%, rgba(239,68,68,0.18) 0%, rgba(252,165,165,0.09) 60%, transparent 100%)",
   },
   Mobile: {
     icon: Gamepad2,
     iconColor: "#ca8a04",
     iconBg: "rgba(253,224,71,0.2)",
     badgeStyle: "bg-yellow-100 text-yellow-700 border border-yellow-200",
-    hoverGlow: "rgba(253,224,71,0.28)",
-    themeWash: "radial-gradient(ellipse at 35% 30%, rgba(234,179,8,0.50) 0%, rgba(253,224,71,0.25) 45%, transparent 70%)",
+    hoverGlow: "rgba(253,224,71,0.22)",
+    themeWash: "radial-gradient(ellipse 90% 80% at 50% 50%, rgba(234,179,8,0.18) 0%, rgba(253,224,71,0.09) 60%, transparent 100%)",
   },
   Multi: {
     icon: Joystick,
     iconColor: "#7c3aed",
     iconBg: "rgba(196,181,253,0.2)",
     badgeStyle: "bg-violet-100 text-violet-700 border border-violet-200",
-    hoverGlow: "rgba(196,181,253,0.3)",
-    themeWash: "radial-gradient(ellipse at 35% 30%, rgba(139,92,246,0.55) 0%, rgba(196,181,253,0.28) 45%, transparent 70%)",
+    hoverGlow: "rgba(196,181,253,0.24)",
+    themeWash: "radial-gradient(ellipse 90% 80% at 50% 50%, rgba(139,92,246,0.18) 0%, rgba(196,181,253,0.09) 60%, transparent 100%)",
   },
   "PC/PS5": {
     icon: Monitor,
     iconColor: "#3b82f6",
     iconBg: "rgba(147,197,253,0.18)",
     badgeStyle: "bg-sky-100 text-sky-700 border border-sky-200",
-    hoverGlow: "rgba(147,197,253,0.3)",
-    themeWash: "radial-gradient(ellipse at 35% 30%, rgba(96,165,250,0.50) 0%, rgba(147,197,253,0.25) 45%, transparent 70%)",
+    hoverGlow: "rgba(147,197,253,0.24)",
+    themeWash: "radial-gradient(ellipse 90% 80% at 50% 50%, rgba(96,165,250,0.18) 0%, rgba(147,197,253,0.09) 60%, transparent 100%)",
   },
 };
 
@@ -221,7 +221,7 @@ function GameCard({ game }: { game: Game }) {
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         boxShadow: hovered
-          ? `0 10px 36px ${config.hoverGlow}, 0 2px 8px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.9)`
+          ? `0 6px 28px ${config.hoverGlow}, 0 2px 8px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.9)`
           : "0 2px 12px rgba(147,197,253,0.08), inset 0 1px 0 rgba(255,255,255,0.7)",
         transition: "all 0.35s ease",
       }}
@@ -234,15 +234,15 @@ function GameCard({ game }: { game: Game }) {
       <motion.div
         className="absolute inset-0 rounded-2xl pointer-events-none"
         animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1] }}
+        transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
         style={{ background: config.themeWash }}
       />
       {/* Extra brightness layer — brightens the glass on hover */}
       <motion.div
         className="absolute inset-0 rounded-2xl pointer-events-none"
-        animate={{ opacity: hovered ? 0.3 : 0 }}
+        animate={{ opacity: hovered ? 0.18 : 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
-        style={{ background: "rgba(255,255,255,0.4)" }}
+        style={{ background: "rgba(255,255,255,0.5)" }}
       />
 
       {/* Platform icon */}
@@ -263,7 +263,7 @@ function GameCard({ game }: { game: Game }) {
           <h3 className="text-lg font-display font-bold text-slate-700 leading-tight">
             {game.title}
           </h3>
-          {isAdmin && <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0">
+          {isAdmin && <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 shrink-0">
             <GameFormModal
               isOpen={isEditOpen}
               setIsOpen={setIsEditOpen}

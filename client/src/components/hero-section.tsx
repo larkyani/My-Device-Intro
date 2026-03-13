@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useMotionTemplate } from "framer-motion";
 import { Edit2 } from "lucide-react";
 import { useAdmin } from "@/contexts/admin-context";
@@ -142,6 +142,15 @@ export function HeroSection() {
   const { data: config } = useSiteConfig();
   const [editOpen, setEditOpen] = useState(false);
   const [editHovered, setEditHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px), (pointer: coarse)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   const heroSubtitle  = config?.heroSubtitle  ?? DEFAULTS.heroSubtitle;
   const heroTitleLine1 = config?.heroTitleLine1 ?? DEFAULTS.heroTitleLine1;
@@ -168,7 +177,7 @@ export function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden"
     >
 
       {/* Background dot grid + center radial glow */}
@@ -190,8 +199,8 @@ export function HeroSection() {
           y: contentY,
           scale: contentScale,
           opacity: contentOpacity,
-          filter: filterStyle,
-          willChange: "transform, opacity, filter",
+          ...(isMobile ? {} : { filter: filterStyle }),
+          willChange: isMobile ? "transform, opacity" : "transform, opacity, filter",
         }}
       >
 
@@ -221,7 +230,7 @@ export function HeroSection() {
           className="mb-12"
         >
           <motion.div
-            animate={{ y: [0, -4, 0] }}
+            animate={isMobile ? {} : { y: [0, -4, 0] }}
             transition={{ duration: 1, repeatDelay: 3, repeat: Infinity, ease: "easeOut" }}
           >
             <h1
@@ -232,7 +241,7 @@ export function HeroSection() {
               <br />
               <motion.span
                 style={{ display: "inline" }}
-                animate={{
+                animate={isMobile ? {} : {
                   filter: [
                     "drop-shadow(0 0 0px rgba(147,197,253,0))",
                     "drop-shadow(0 0 28px rgba(147,197,253,0.85))",
@@ -269,7 +278,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
-          className="text-slate-400 mx-auto leading-relaxed whitespace-nowrap"
+          className="text-slate-400 mx-auto leading-relaxed"
           style={{ fontSize: "0.95rem", letterSpacing: "0.04em" }}
         >
           {description}

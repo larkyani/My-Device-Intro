@@ -67,6 +67,13 @@
     selection-color: #2563eb;
   }
 
+  /* モバイルでは background-attachment: fixed が再描画を引き起こしパフォーマンス低下 */
+  @media (pointer: coarse) {
+    body {
+      background-attachment: scroll;
+    }
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     @apply tracking-wide;

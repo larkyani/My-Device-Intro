@@ -75,7 +75,7 @@ export function StarScrollEffect() {
     const stars: Star[] = [];
     let lastScrollY = window.scrollY;
     let lastScrollTime = performance.now();
-    let raf: number;
+    let raf: number | null = null;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -112,6 +112,8 @@ export function StarScrollEffect() {
 
       // Cap total star count
       if (stars.length > 40) stars.splice(0, stars.length - 40);
+
+      startAnimation();
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -138,15 +140,17 @@ export function StarScrollEffect() {
         drawPixelStar(ctx, s.x, s.y, s.size, s.color, s.opacity);
       }
 
-      raf = requestAnimationFrame(animate);
+      raf = stars.length > 0 ? requestAnimationFrame(animate) : null;
     };
 
-    raf = requestAnimationFrame(animate);
+    const startAnimation = () => {
+      if (raf === null) raf = requestAnimationFrame(animate);
+    };
 
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", handleScroll);
-      cancelAnimationFrame(raf);
+      if (raf !== null) cancelAnimationFrame(raf);
     };
   }, []);
 

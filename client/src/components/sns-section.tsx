@@ -468,39 +468,9 @@ function SnsCard({ link }: { link: SnsLink }) {
         }}
       />
 
-      {/* Copied! flash overlay */}
-      <AnimatePresence>
-        {copied && (
-          <motion.div
-            className="absolute inset-0 rounded-2xl pointer-events-none z-20 flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ background: "rgba(255,255,255,0.35)" }}
-          >
-            <motion.div
-              initial={{ scale: 0.6, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="flex flex-col items-center gap-1"
-            >
-              <span className="text-xl">💙</span>
-              <span
-                className="font-display font-bold text-xs tracking-widest text-sky-600"
-                style={{ fontFamily: "'M PLUS Rounded 1c', sans-serif" }}
-              >
-                Copied!
-              </span>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Edit/Delete/Open buttons — admin only */}
       {isAdmin && <div
-        className="absolute top-2.5 right-2.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20"
+        className="absolute top-2.5 right-2.5 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 z-20"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Open in new tab */}
@@ -559,9 +529,33 @@ function SnsCard({ link }: { link: SnsLink }) {
           <p className="text-[10px] text-slate-400 mt-1 opacity-60 truncate max-w-[100px] mx-auto">
             {link.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
           </p>
-          <p className="text-[9px] text-slate-300 mt-0.5 font-medium tracking-wider">
-            tap to copy
-          </p>
+          <div className="mt-0.5 h-4 flex items-center justify-center overflow-hidden">
+            <AnimatePresence mode="wait" initial={false}>
+              {copied ? (
+                <motion.span
+                  key="copied"
+                  className="flex items-center gap-1 font-display font-bold text-[9px] tracking-widest text-sky-500"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                >
+                  ✓ Copied!
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="tap"
+                  className="text-[9px] text-slate-300 font-medium tracking-wider"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                >
+                  tap to copy
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </motion.div>
